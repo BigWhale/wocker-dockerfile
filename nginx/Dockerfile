@@ -3,22 +3,38 @@ FROM wocker/base
 MAINTAINER ixkaito <ixkaito@gmail.com>
 
 #
+# Prepare for installation
+#
+RUN apt-get update \
+  && apt-get clean \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+   wget \
+   gnupg \
+   ca-certificates \
+   apt-transport-https
+
+RUN wget -q https://packages.sury.org/php/apt.gpg \
+  && APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn apt-key add apt.gpg
+
+RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+
+#
 # Install nginx and PHP
 #
 RUN apt-get update \
   && apt-get clean \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     nginx \
-    php7.0 \
-    php7.0-bz \
-    php7.0-cli \
-    php7.0-curl \
-    php7.0-fpm \
-    php7.0-gd \
-    php7.0-mbstring \
-    php7.0-mysql \
-    php7.0-xdebug \
-    php7.0-xml \
+    php7.2 \
+    php7.2-bz \
+    php7.2-cli \
+    php7.2-curl \
+    php7.2-fpm \
+    php7.2-gd \
+    php7.2-mbstring \
+    php7.2-mysql \
+    php7.2-xdebug \
+    php7.2-xml \
   && rm -rf /var/lib/apt/lists/*
 
 #
@@ -34,20 +50,20 @@ RUN sed -i -e "s#root /var/www/html;#root /var/www/wordpress/;#" /etc/nginx/site
 #
 # PHP-FPM settings
 #
-RUN sed -i -e "s/^user =.*/user = wocker/" /etc/php/7.0/fpm/pool.d/www.conf \
-  && sed -i -e "s/^group = .*/group = wocker/" /etc/php/7.0/fpm/pool.d/www.conf \
-  && sed -i -e "s/^listen.owner =.*/listen.owner = wocker/" /etc/php/7.0/fpm/pool.d/www.conf \
-  && sed -i -e "s/^listen.group =.*/listen.group = wocker/" /etc/php/7.0/fpm/pool.d/www.conf
+RUN sed -i -e "s/^user =.*/user = wocker/" /etc/php/7.2/fpm/pool.d/www.conf \
+  && sed -i -e "s/^group = .*/group = wocker/" /etc/php/7.2/fpm/pool.d/www.conf \
+  && sed -i -e "s/^listen.owner =.*/listen.owner = wocker/" /etc/php/7.2/fpm/pool.d/www.conf \
+  && sed -i -e "s/^listen.group =.*/listen.group = wocker/" /etc/php/7.2/fpm/pool.d/www.conf
 
 #
 # php.ini settings
 #
-RUN sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 32M/" /etc/php/7.0/fpm/php.ini \
-  && sed -i -e "s/^post_max_size.*/post_max_size = 64M/" /etc/php/7.0/fpm/php.ini \
-  && sed -i -e "s/^display_errors.*/display_errors = On/" /etc/php/7.0/fpm/php.ini \
-  && sed -i -e "s/^;mbstring.internal_encoding.*/mbstring.internal_encoding = UTF-8/" /etc/php/7.0/fpm/php.ini \
-  && sed -i -e "s#^;sendmail_path.*#sendmail_path = /usr/local/bin/mailhog sendmail#" /etc/php/7.0/fpm/php.ini \
-  && service php7.0-fpm start
+RUN sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 32M/" /etc/php/7.2/fpm/php.ini \
+  && sed -i -e "s/^post_max_size.*/post_max_size = 64M/" /etc/php/7.2/fpm/php.ini \
+  && sed -i -e "s/^display_errors.*/display_errors = On/" /etc/php/7.2/fpm/php.ini \
+  && sed -i -e "s/^;mbstring.internal_encoding.*/mbstring.internal_encoding = UTF-8/" /etc/php/7.2/fpm/php.ini \
+  && sed -i -e "s#^;sendmail_path.*#sendmail_path = /usr/local/bin/mailhog sendmail#" /etc/php/7.2/fpm/php.ini \
+  && service php7.2-fpm start
 
 #
 # MariaDB settings & install WordPress
