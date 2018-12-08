@@ -45,7 +45,12 @@ RUN sed -i -e "s#root /var/www/html;#root /var/www/wordpress/;#" /etc/nginx/site
   && sed -i -e "/location.*php/,/}/ s/#//" /etc/nginx/sites-available/default \
   && sed -i -e "/# With php-cgi.*/,/}/ s/fastcgi.*//" /etc/nginx/sites-available/default \
   && sed -i -e "s/server_name _;/server_name localhost;/" /etc/nginx/sites-available/default \
+  && sed -i -e "s/php7.0-fpm.sock;/php7.2-fpm.sock;/" /etc/nginx/sites-available/default \
+  && sed -i -e "s/try_files \$uri \$uri\/ \=404;/try_files \$uri \$uri\/ \/index.php?\$args;/" /etc/nginx/sites-available/default \
+  && sed -i '54i    include /etc/nginx/wordpress.conf;' /etc/nginx/sites-available/default \
   && sed -i -e "s/user www-data/user wocker/" /etc/nginx/nginx.conf
+
+ADD wordpress.conf /etc/nginx/wordpress.conf
 
 #
 # PHP-FPM settings
@@ -54,6 +59,8 @@ RUN sed -i -e "s/^user =.*/user = wocker/" /etc/php/7.2/fpm/pool.d/www.conf \
   && sed -i -e "s/^group = .*/group = wocker/" /etc/php/7.2/fpm/pool.d/www.conf \
   && sed -i -e "s/^listen.owner =.*/listen.owner = wocker/" /etc/php/7.2/fpm/pool.d/www.conf \
   && sed -i -e "s/^listen.group =.*/listen.group = wocker/" /etc/php/7.2/fpm/pool.d/www.conf
+
+RUN sed -i -e "s/;daemonize = yes/daemonize = no/g" /etc/php/7.2/fpm/php-fpm.conf
 
 #
 # php.ini settings
