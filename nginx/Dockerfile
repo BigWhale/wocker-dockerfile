@@ -1,40 +1,34 @@
-FROM wocker/base
+FROM big77whale/base-image
 
-MAINTAINER ixkaito <ixkaito@gmail.com>
+MAINTAINER David Klasinc <david.klasinc@gmail.com> 
 
 #
 # Prepare for installation
 #
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y --no-install-recommends software-properties-common
+
+RUN add-apt-repository ppa:ondrej/php
+
 RUN apt-get update \
   && apt-get clean \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
    wget \
    gnupg \
    ca-certificates \
-   apt-transport-https
-
-RUN wget -q https://packages.sury.org/php/apt.gpg \
-  && APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn apt-key add apt.gpg
-
-RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-
-#
-# Install nginx and PHP
-#
-RUN apt-get update \
-  && apt-get clean \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    nginx \
-    php7.3 \
-    php7.3-bz \
-    php7.3-cli \
-    php7.3-curl \
-    php7.3-fpm \
-    php7.3-gd \
-    php7.3-mbstring \
-    php7.3-mysql \
-    php7.3-xdebug \
-    php7.3-xml \
+   apt-transport-https \
+   nginx \
+   php7.3 \
+   php7.3-bz \
+   php7.3-cli \
+   php7.3-curl \
+   php7.3-fpm \
+   php7.3-gd \
+   php7.3-mbstring \
+   php7.3-mysql \
+   php7.3-xdebug \
+   php7.3-xml \
   && rm -rf /var/lib/apt/lists/*
 
 #
@@ -108,3 +102,4 @@ RUN mkdir -p /var/log/supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 CMD ["/usr/bin/supervisord"]
+
