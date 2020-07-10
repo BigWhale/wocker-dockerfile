@@ -33,16 +33,17 @@ RUN apt-get update \
    ca-certificates \
    apt-transport-https \
    nginx \
-   php7.3 \
-   php7.3-bz \
-   php7.3-cli \
-   php7.3-curl \
-   php7.3-fpm \
-   php7.3-gd \
-   php7.3-mbstring \
-   php7.3-mysql \
-   php7.3-xdebug \
-   php7.3-xml \
+   php7.4 \
+   php7.4-bz \
+   php7.4-cli \
+   php7.4-curl \
+   php7.4-fpm \
+   php7.4-gd \
+   php7.4-mbstring \
+   php7.4-mysql \
+   php7.4-xdebug \
+   php7.4-xml \
+   php7.4-zip \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/local/lib/ /usr/local/lib/
@@ -75,7 +76,7 @@ RUN curl -o ${BIN}/mailhog -L https://github.com/mailhog/MailHog/releases/downlo
 #
 # Xdebug settings
 #
-ADD xdebug.ini /etc/php/7.3/cli/conf.d/20-xdebug.ini
+ADD xdebug.ini /etc/php/7.4/cli/conf.d/20-xdebug.ini
 
 #
 # `mysqld_safe` patch
@@ -103,7 +104,7 @@ RUN sed -i -e "s#root /var/www/html;#root /var/www/wordpress/;#" /etc/nginx/site
   && sed -i -e "/location.*php/,/}/ s/#//" /etc/nginx/sites-available/default \
   && sed -i -e "/# With php-cgi.*/,/}/ s/fastcgi.*//" /etc/nginx/sites-available/default \
   && sed -i -e "s/server_name _;/server_name localhost;/" /etc/nginx/sites-available/default \
-  && sed -i -e "s/php7.0-fpm.sock;/php7.3-fpm.sock;/" /etc/nginx/sites-available/default \
+  && sed -i -e "s/php7.0-fpm.sock;/php7.4-fpm.sock;/" /etc/nginx/sites-available/default \
   && sed -i -e "s/try_files \$uri \$uri\/ \=404;/try_files \$uri \$uri\/ \/index.php?\$args;/" /etc/nginx/sites-available/default \
   && sed -i '54i    include /etc/nginx/wordpress.conf;' /etc/nginx/sites-available/default \
   && sed -i -e "s/user www-data/user wocker/" /etc/nginx/nginx.conf \
